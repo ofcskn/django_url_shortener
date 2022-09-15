@@ -26,7 +26,7 @@ def do(request):
             new_url = Url(long_url = url, url_short_id = url_short_code)
             # save new url to the database
             new_url.save()
-            return HttpResponseRedirect(reverse('shortner:yuppi', args=(url_short_code)))
+            return HttpResponseRedirect(reverse('shortner:yuppi', args=(url_short_code,)))
         except ValidationError:
             return HttpResponse('Sorry, this is not a valid url.')
 
@@ -40,4 +40,7 @@ def successfully_created(request, url_short_code):
     return render(request, 'successful.html', context)
 
 def go(request, url_short_code):
-    return HttpResponse('go to ' + url_short_code)
+    # get url from the database
+    url_from_database = get_object_or_404(Url, url_short_id = url_short_code)
+    # redirect to the long url
+    return redirect(url_from_database.long_url)
